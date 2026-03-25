@@ -1,0 +1,97 @@
+###
+//SERVIDOR DE TESTE, PARA VER SE ESTÁ ON!
+GET http://localhost:3001/health HTTP/1.1
+
+###
+//CADASTRAR USUÁRIO
+POST http://localhost:3001/users HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "João Silva cardoso",
+  "email": "joaodwadsa@email.com",
+  "password": "senha123"
+}
+
+###
+//MOSTRA TODOS OS USUARIOS
+GET http://localhost:3001/users HTTP/1.1
+Content-Type: application/json
+
+
+###
+//MOSTRA USUARIO POR ID
+GET http://localhost:3001/users/2 HTTP/1.1
+Content-Type: application/json
+
+
+###
+//ATUALIZA O USUAIO PELO ID /1
+PUT http://localhost:3001/users/1 HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "João Silva de Moraes",
+  "email": "joaosilveira@email.com",
+  "password": "senha123"
+}
+
+###
+//DELETA O USUARIO PELO ID
+DELETE http://localhost:3001/users/1 HTTP/1.1
+Content-Type: application/json
+
+
+////////////////////////
+//////  TAREFAS ////////
+////////////////////////
+
+
+###
+//CRIAR TAREFA
+POST http://localhost:3001/todos HTTP/1.1
+Content-Type: application/json
+
+{
+  "task": "Estudar Node.js",
+  "userId": 1
+}
+
+###
+//LISTAR TAREFAS DO USUÁRIO
+GET http://localhost:3001/todos HTTP/1.1
+Content-Type: application/json
+
+{
+  "userId": 2
+}
+
+###
+//ATUALIZAR TAREFA
+PUT http://localhost:3001/todos/1 HTTP/1.1
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "task": "Estudar Node.js e Express",
+  "finished": true
+}
+
+###
+//DELETAR TAREFA
+DELETE http://localhost:3001/todos/1 HTTP/1.1
+Content-Type: application/json
+
+{
+  "userId": 1
+}
+
+###
+//LOGIN
+POST http://localhost:3001/auth HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "joao@email.com",
+  "password": "senha123"
+}
