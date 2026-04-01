@@ -7,7 +7,7 @@ describe("Testing post service", () => {
 
     const title = "test"
     const content = "test@jest.com"
-    let postId = 0
+    //let postId = 0
     let authorId = 0
 
     beforeAll(async () => {
