@@ -1,17 +1,21 @@
-import type { Request, Response } from "express";
-import { loginService } from "../services/auth.services.js";
+import type { Request, Response } from "express"
+import { AuthService } from "../services/auth.service.js"
 
-export async function login(req: Request, res: Response) {
-  const { email, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({ error: "email e password são obrigatórios." });
-  }
+const jwtSecret = process.env.JWT_SECRET || "Default#$%Pass"
+const authService = new AuthService()
 
-  try {
-    const result = await loginService(email, password);
-    return res.status(200).json(result);
-  } catch (error: any) {
-    return res.status(401).json({ error: error.message });
-  }
-}
+export class AuthController {
+    async login(req: Request, res: Response) {
+        try {
+            const { email, password } = req.body
+            const dados = await authService.authenticate(jwtSecret, email, password)
+
+            return res.status(200).json(dados)
+        } catch (error) {
+            const err = error as any;
+            const status = err.status || 500
+            return res.status(status).json({ error: err.message || "Erro interno" })
+        }
+    }
+} 

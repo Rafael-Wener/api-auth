@@ -1,60 +1,85 @@
-import type { Request, Response } from "express";
-import { createUserService, getAllUsersService, getUserByIdService, updateUserService, deleteUserService } from "../services/user.services.js";
+import type { Request, Response } from "express"
+import { UserService } from "../services/user.service.js"
 
-export async function createUser(req: Request, res: Response) {
-  const { name, email, password } = req.body;
+const userService = new UserService()
 
-  if (!name || !email || !password) {
-    return res.status(400).json({ error: "name, email e password são obrigatórios." });
-  }
+export class UserController {
+    async getAll(req: Request, res: Response) {
+        try {
+            const users = await userService.findAll()
+            return res.json(users)
+        } catch (err) {
+            res.status(400).json({ error: (err as Error).message })
+            console.error(err)
+        }
+    }
 
-  try {
-    const user = await createUserService({ name, email, password });
-    return res.status(201).json(user);
-  } catch (error: any) {
-    return res.status(400).json({ error: error.message });
-  }
-}
+    async getById(req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id)
+            const user = await userService.findById(id)
+            if (!user) {
+                return res.status(404).json({ message: "usuario nao encontrado" })
+            }
+            return res.json(user)
+        } catch (err) {
+            // res.status(err.status).json({ error: err.message })
+            console.log(err)
+        }
+    }
 
-export async function getAllUsers(req: Request, res: Response) {
-  try {
-    const users = await getAllUsersService();
-    return res.status(200).json(users);
-  } catch (error: any) {
-    return res.status(400).json({ error: error.message });
-  }
-}
+    //criar usuario
+    async create(req: Request, res: Response) {
+        try {
+            const { name, email, password, role } = req.body
 
-export async function getUserById(req: Request, res: Response) {
-  const id = Number(req.params.id);
+            if (!name || !email || !password) {
+                return res.status(400).json({ error: "Os campos name, email e password são obrigatórios." })
+            }
+            // const name = req.body.name?.trim() || null
+            // const email = sanitizeEmail(req.body.email)
+            // const password = String(req.body.password || "")
 
-  try {
-    const user = await getUserByIdService(id);
-    return res.status(200).json(user);
-  } catch (error: any) {
-    return res.status(404).json({ error: error.message });
-  }
-}
+            // const validationError = basicValidationRegister(email, password)
 
-export async function updateUser(req: Request, res: Response) {
-  const id = Number(req.params.id);
-  const { name, email, password } = req.body;
 
-  try {
-    const user = await updateUserService(id, { name, email, password });
-    return res.status(200).json(user);
-  } catch (error: any) {
-    return res.status(400).json({ error: error.message });
-  }
-}
+            // if (validationError) {
+            //     return res.status(400).json({ error: validationError })
+            // }
 
-export async function deleteUser(req: Request, res: Response) {
-  const id = Number(req.params.id);
+            const user = await userService.create({ name, email, password, role })
 
-  try {
-    const result = await deleteUserService(id);
-    return res.status(200).json(result);
-  } catch (error: any) {
-    return res.status(404).json({ error: error.message });
-  }
+            res.status(201).json(user)
+        } catch (err) {
+            res.status(400).json({ error: (err as Error).message })
+        }
+    }
+
+
+    async update(req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id)
+            const { name, password, } = req.body
+
+            const user = await userService.update(id, { name, password, })
+
+            return res.json(user)
+        } catch (err) {
+            //console.log(err)
+            return res.status(500).json({ error: "Erro ao atualizar usuários" })
+        }
+    }
+
+    async delete(req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id)
+
+            await userService.delete(id)
+
+            return res.status(204).send()
+        } catch (err) {
+            console.log(err)
+            return res.status(500).json({ error: "Erro ao remover usuário" })
+        }
+    }
 }
