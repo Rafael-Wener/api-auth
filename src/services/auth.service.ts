@@ -1,8 +1,10 @@
-import { UserService } from "./user.service.js"
-import bcrypt from "bcrypt"
-import jwt from "jsonwebtoken"
+import { UserService } from "./user.service.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
-const userService = new UserService()
+dotenv.config();
+const userService = new UserService();
 
 class AppError extends Error {
     public status: number;
@@ -13,25 +15,31 @@ class AppError extends Error {
 }
 
 export class AuthService {
-    async authenticate(jwtSecret: string, email: string, password: string) {
-        const user = await userService.findByEmail(email)
+    async authenticate(email: string, passwordDigitada: string) {
+        const user = await userService.findByEmail(email);
 
         if (!user) {
-            throw new AppError("Credenciais inválidos", 401)
+            throw new AppError("Credenciais inválidas", 401);
         }
 
-        const validPassword = await bcrypt.compare(password, user.password)
+        const isPasswordValid = await bcrypt.compare(passwordDigitada, user.password);
 
-        if (!validPassword) {
-            throw new AppError("Credenciais inválidos", 401)
+        if (!isPasswordValid) {
+            throw new AppError("Credenciais inválidas", 401);
         }
 
-        //criar o Secret no .env
-        const token = jwt.sign({ sub: user.id, email: user.email }, jwtSecret, { expiresIn: "1h", })
+        // A SECRET deve ser a mesma do .env para o middleware conseguir ler depois
+        const secret = process.env.JWT_SECRET || "SUA_CHAVE_RESERVA";
+        
+        const token = jwt.sign(
+            { sub: user.id, email: user.email }, 
+            secret, 
+            { expiresIn: "10h" }
+        );
 
         return { 
-            token,
-            user: { id:user.id, name: user.name, email: user.email },
-        }
+            token, 
+            user: { id: user.id, name: user.name, email: user.email } 
+        };
     }
-} 
+}

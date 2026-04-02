@@ -1,18 +1,22 @@
-import express  from "express";
+import { Router }  from "express";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js"
 import { PostController } from "../controller/post.controller.js";
+//import { PostService } from "../services/post.service.js";
 
-
-const postRouter = express.Router()
-
+const postRouter = Router()
 const postController = new PostController()
 
-postRouter.post("/", authMiddleware, postController.create)
+postRouter.post("/", postController.create)
 
-postRouter.get("/", authMiddleware, postController.getPosts)
+postRouter.get("/", postController.getPosts)
 
-postRouter.delete("/:id", authMiddleware, postController.deletePosts)
+postRouter.get("/:id", postController.getById)
+
+postRouter.use(authMiddleware)
+
+postRouter.put("/:id", postController.update)
+postRouter.delete("/:id", postController.deletePosts)
 
 export default postRouter
 

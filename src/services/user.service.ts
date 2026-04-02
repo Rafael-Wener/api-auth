@@ -25,11 +25,11 @@ export class UserService {
     
 
     async create(data: { name: string; email: string; password: string; role: string }) {
-        // const existing = await this.findByEmail(data.email)
-        // if (existing) {
-        //     const err = new Error("E-mail já cadastrado")
-        //     throw err
-        // }
+        const existing = await this.findByEmail(data.email)
+        if (existing) {
+            const err = new Error("E-mail já cadastrado")
+            throw err
+        }
 
         const {password, ...anothers } = data
         const passwordHash = await bcrypt.hash(data.password, 10)
@@ -46,7 +46,7 @@ export class UserService {
         })
     }
 
-    async update(id: number, data: { name?: string; password: string }) {
+    async update(id: number, data: { name?: string; email: string; password: string }) {
         return await prisma.user.update({
             where: { id },
             data,

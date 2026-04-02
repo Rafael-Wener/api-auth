@@ -26,9 +26,10 @@ export class PostService {
         })
     }
 
-    async update(id: number) {
+    async update(id: number, data: { title?: string; content: string; authorId: number }) {
         return await prisma.post.update({
             where: { id },
+            data,
         })
     }
 }

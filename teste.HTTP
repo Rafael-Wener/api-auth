@@ -1,3 +1,6 @@
+@baseUrl = http://localhost:3001
+@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjgsImVtYWlsIjoiUmFmYWVsQGVtYWlsLmNvbS5iciIsImlhdCI6MTc3NTE1Mjg4MCwiZXhwIjoxNzc1MTg4ODgwfQ.NeyiCJI_pLidzRr7CMVBkfK_g_Nq4ws44sZzOF2EELQ
+
 ###
 //SERVIDOR DE TESTE, PARA VER SE ESTÁ ON!
 GET http://localhost:3001/health HTTP/1.1
@@ -8,38 +11,58 @@ POST http://localhost:3001/users HTTP/1.1
 Content-Type: application/json
 
 {
-  "name": "João Silva cardoso",
-  "email": "joaodwadsa@email.com",
+  "name": "Rafael",
+  "email": "Rafael@email.com.br",
+  "password": "senha123",
+  "role": "DEFAULT"
+}
+
+
+////////////////////    USA O TOKEN        ///////////////////////
+
+
+###
+//LOGIN DO USUARIO
+POST http://localhost:3001/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "Rafael@email.com.br",
   "password": "senha123"
 }
+
 
 ###
 //MOSTRA TODOS OS USUARIOS
 GET http://localhost:3001/users HTTP/1.1
-Content-Type: application/json
+Authorization: Bearer {{token}}
 
 
 ###
 //MOSTRA USUARIO POR ID
-GET http://localhost:3001/users/2 HTTP/1.1
-Content-Type: application/json
+GET http://localhost:3001/users/1 HTTP/1.1
+Authorization: Bearer {{token}}
 
 
 ###
-//ATUALIZA O USUAIO PELO ID /1
-PUT http://localhost:3001/users/1 HTTP/1.1
+//ATUALIZA O USUARIO PELO ID /2
+PUT http://localhost:3001/users/2 HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
-  "name": "João Silva de Moraes",
-  "email": "joaosilveira@email.com",
+  "name": "Miles",
+  "email": "miles@email.com",
   "password": "senha123"
 }
 
 ###
 //DELETA O USUARIO PELO ID
-DELETE http://localhost:3001/users/1 HTTP/1.1
+DELETE http://localhost:3001/users/8 HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{token}}
+
+
 
 
 ////////////////////////
@@ -49,27 +72,34 @@ Content-Type: application/json
 
 ###
 //CRIAR TAREFA
-POST http://localhost:3001/todos HTTP/1.1
+POST http://localhost:3001/posts HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
-  "task": "Estudar Node.js",
+  "title": "Estudar Node.js",
+  "content": "Aprender sobre validação do Prisma",
   "userId": 1
 }
 
 ###
 //LISTAR TAREFAS DO USUÁRIO
-GET http://localhost:3001/todos HTTP/1.1
+GET http://localhost:3001/posts/2 HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
-{
-  "userId": 2
-}
+
+###
+//LISTA A TAREFAS DE TODOS OS USUARIOS
+GET http://localhost:3001/posts HTTP/1.1
+Authorization: Bearer {{token}}
+
 
 ###
 //ATUALIZAR TAREFA
-PUT http://localhost:3001/todos/1 HTTP/1.1
+PUT http://localhost:3001/posts/1 HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "userId": 1,
@@ -79,20 +109,10 @@ Content-Type: application/json
 
 ###
 //DELETAR TAREFA
-DELETE http://localhost:3001/todos/1 HTTP/1.1
+DELETE http://localhost:3001/posts/1 HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "userId": 1
 }
-
-###
-//LOGIN
-POST http://localhost:3001/auth HTTP/1.1
-Content-Type: application/json
-
-{
-  "email": "joao@email.com",
-  "password": "senha123"
-}
-

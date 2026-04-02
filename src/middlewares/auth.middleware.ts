@@ -1,26 +1,30 @@
-import type { NextFunction, Request, Response } from "express"
-import jwt from "jsonwebtoken"
-import dotenv from "dotenv"
-import { UserService } from "../services/user.service.js"
+import type { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
-const userService = new UserService()
+dotenv.config();
 
-dotenv.config()
-export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.header("Authorization")?.replace("Bearer ", "")
+export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    const authHeader = req.headers.authorization;
 
-    if (!token) {return res.status(403).send({ error: "no token provided" })
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ error: "Token não fornecido ou malformatado" });
     }
+
+    const token = authHeader.split(" ")[1];
+
+    // ESTA É A LINHA QUE SALVA O TYPESCRIPT:
+    if (!token) {
+        return res.status(401).json({ error: "Token ausente" });
+    }
+
+    const secret = process.env.JWT_SECRET || "SUA_CHAVE_RESERVA";
+
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET as string)
-        req.user = Number(decoded.sub)
-        
-        const user = await userService.findById(req.user)
-
-        console.log(user)
-
-        next()
+        const decoded = jwt.verify(token, secret) as any;
+        (req as any).user = decoded.sub;
+        return next();
     } catch (err) {
-       res.status(401).send( "invalid token" )
+        return res.status(401).json({ error: "Token inválido" });
     }
-}
+};
