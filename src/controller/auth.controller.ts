@@ -1,17 +1,20 @@
 import type { Request, Response } from "express";
-import { loginService } from "../services/auth.services.js";
+import { AuthService } from "../services/auth.service.js";
 
-export async function login(req: Request, res: Response) {
-  const { email, password } = req.body;
+const authService = new AuthService();
 
-  if (!email || !password) {
-    return res.status(400).json({ error: "email e password são obrigatórios." });
-  }
-
-  try {
-    const result = await loginService(email, password);
-    return res.status(200).json(result);
-  } catch (error: any) {
-    return res.status(401).json({ error: error.message });
-  }
+export class AuthController {
+    async login(req: Request, res: Response) {
+        try {
+            const { email, password } = req.body;
+            
+            // ATENÇÃO AQUI: Tem que passar as duas variáveis separadas!
+            const result = await authService.authenticate(email, password);
+            
+            return res.json(result);
+        } catch (err: any) {
+            // Retorna o erro 401 com a mensagem "Credenciais inválidas"
+            return res.status(err.status || 401).json({ error: err.message });
+        }
+    }
 }
